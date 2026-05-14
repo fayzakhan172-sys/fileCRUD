@@ -5,17 +5,25 @@ import os
 st.title("CRUD File Manager")
 
 
+# SHOW FILES & FOLDERS
 def show_items():
+
     items = list(Path().glob('*'))
 
     if items:
         st.subheader("Files & Folders")
+
         for item in items:
-            st.write(item)
+            st.write(item.name)
+
+    else:
+        st.info("No files or folders found")
 
 
 show_items()
 
+
+# SIDEBAR MENU
 menu = st.sidebar.selectbox(
     "Select Operation",
     [
@@ -59,7 +67,7 @@ elif menu == "Read File":
 
         p = Path(file_name)
 
-        if p.exists():
+        if p.exists() and p.is_file():
 
             with open(file_name, 'r') as file:
                 st.text(file.read())
@@ -84,7 +92,7 @@ elif menu == "Update File":
 
         p = Path(file_name)
 
-        if p.exists():
+        if p.exists() and p.is_file():
 
             mode = "w" if option == "Overwrite" else "a"
 
@@ -106,7 +114,7 @@ elif menu == "Delete File":
 
         p = Path(file_name)
 
-        if p.exists():
+        if p.exists() and p.is_file():
 
             os.remove(p)
 
@@ -163,11 +171,14 @@ elif menu == "Delete Folder":
 
         p = Path(folder_name)
 
-        if p.exists():
+        if p.exists() and p.is_dir():
 
-            p.rmdir()
+            try:
+                p.rmdir()
+                st.success("FOLDER DELETED")
 
-            st.success("FOLDER DELETED")
+            except:
+                st.error("FOLDER IS NOT EMPTY")
 
         else:
             st.error("FOLDER NOT FOUND")
